@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Itsna Cofee Dashboard</title>
+    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/style.css') }}" />
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/styledarurat.css') }}" />
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/globals.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+    .pulsing {
+      animation: pulse 1s infinite;
+    }
+  
+    @keyframes pulse {
+      0%   { transform: scale(1); opacity: 1; }
+      50%  { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  
+    .white-icon {
+      filter: brightness(0) invert(1);
+    }
+    
+    .blinking {
+    animation: blinkOnce 0.6s ease-in-out;
+    }
+  
+    @keyframes blinkOnce {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    /* Add a style for when comfort is "Tidak Nyaman" to change icon/text color if desired */
+    .uncomfortable-text {
+        color: red; /* Example: make text red when uncomfortable */
+        font-weight: bold;
+    }
+    .uncomfortable-icon {
+        filter: invert(30%) sepia(100%) saturate(700%) hue-rotate(-20deg) brightness(100%) contrast(100%); /* Example: make icon red */
+    }
+  </style>
+  </head>
+  <body>
+  <div class="fullscreen-blink" id="blink" ></div>
+    <div class="pink-darurat" data-model-id="452:2188" id="popup">
+      <div class="overlap">
+        <div class="white-background"></div>
+        <header class="header">
+          <div class="logo">
+            <div class="overlap-group">
+              <div class="text-wrapper">Itsna Coffee</div>
+              <img class="java" src="https://c.animaapp.com/Fv1lO2Vw/img/java@2x.png" />
+            </div>
+          </div>
+          <div class="user">
+            <div class="logo-alpha">
+              <img class="group" src="https://c.animaapp.com/Fv1lO2Vw/img/group@2x.png" />
+              <img class="vector" src="https://c.animaapp.com/Fv1lO2Vw/img/vector.svg" />
+            </div>
+            <div class="div">Welcome back, Itsna!</div>
+          </div>
+        </header>
+        <div class="darurat">
+          <div class="overlap-2">
+            <div class="text-wrapper-2">KONDISI DARURAT</div>
+            <div class="text-wrapper-3">Segera Cari Pertolongan!</div>
+            <img class="i-problem" src="https://c.animaapp.com/Fv1lO2Vw/img/i-problem.svg" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pink" data-model-id="452:2036" id="pink">
+      <a type="button" href="surprise" class="pencet">bonus</a>
+      <div class="overlap">
+        <div class="white-background"></div>
+        <header class="header" id="header">
+          <div class="logo">
+            <div class="overlap-group">
+              <div class="text-wrapper">Itsna Coffee</div>
+              <img class="java" src="https://c.animaapp.com/ojfxqinY/img/java@2x.png" />
+            </div>
+          </div>
+          <div class="update"><p>Last updated: <a id="timestamp">time placeholder</a></p></div>
+          <div class="user">
+            <div class="logo-alpha">
+              <img class="group" src="https://c.animaapp.com/ojfxqinY/img/group@2x.png" />
+              <img class="vector" src="https://c.animaapp.com/ojfxqinY/img/vector.svg" />
+            </div>
+            <div class="div">Welcome back, Itsna!</div>
+          </div>
+        </header>
+        
+        <div class="bar-atas">
+          
+          <div class="temp">
+            <div class="overlap-2">
+              <div class="rectangle"></div>
+              <div class="gauge">
+                <canvas id="tempChart" width="180" height="90"></canvas>
+              </div>
+              <div class="overlap-wrapper">
+                <div class="overlap-3">
+                  <div class="text-wrapper-8">Temperatur</div>
+                  <div class="text-wrapper-9" id="temp-status">Normal</div>
+                </div>
+              </div>
+              <div class="text-wrapper-7" style="position:absolute;top:200px;left:105px;" id="temp-value">30°</div>
+            </div>
+          </div>
+          
+          <div class="kelembapan">
+            <div class="liquid-graph">
+              <canvas id="humidChart" width="150" height="150"></canvas>
+            </div>
+            <div class="overlap-group-wrapper">
+              <div class="overlap-4">
+                <div class="text-wrapper-8">Kelembapan</div>
+                <div class="text-wrapper-9" id="humid-status">Normal</div>
+              </div>
+            </div>
+            <div class="text-wrapper-10" style="top: 215px; left: 100px;" id="humid-value">60%</div>
+          </div>
+          
+          <div class="kadar">
+            <div class="overlap-5">
+              <div class="div-wrapper">
+                <div class="overlap-group-4">
+                  <div class="text-wrapper-8">Kadar CO2</div>
+                  <div class="text-wrapper-9" id="co2-status">Normal</div>
+                </div>
+              </div>
+              <canvas id="co2Chart" width="200" height="80" style="position:absolute; top:80px; left:30px;"></canvas>
+              <div class="text-wrapper-11" id="co2-value">20ppm</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bar-kanan">
+          
+          <div class="group-3">
+            <div class="overlap-group-5">
+              <div class="ga-bocor">
+                <div class="tidak-ada-kebocoran">Tidak ada<br />Kebocoran</div>
+                <img class="iconly-sharp-bold" id="leak-icon" src="https://c.animaapp.com/ojfxqinY/img/iconly-sharp-bold-login.svg" />
+              </div>
+              <div class="text-wrapper-12">Kebocoran</div>
+            </div>
+          </div>
+          
+          <div class="group-4">
+            <div class="overlap-6">
+              <div class="text-wrapper-13" style="font-size: 30px;">Kenyamanan<br>ruangan</div>
+              <div class="group-5">
+                <div class="tidak-ada-orang" id="comfort-status-text">Nyaman</div> <img class="iconly-sharp-bold-2" id="comfort-icon" style="display: none;" src="https://cdn-icons-png.flaticon.com/512/2800/2800262.png" /> </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bar-bawah">
+          
+          <div class="overlap-7">
+            <div class="rectangle-3"></div>
+            
+             <div class="kebisingan">
+              <div class="overlap-8">
+                <div class="group-6" style="display: none;">
+                  <div class="overlap-group-6">
+                    <div class="text-wrapper-14">Kebisingan</div>
+                    <div class="text-wrapper-15" id="noise-status">Tinggi</div>
+                  </div>
+                </div>
+                <img
+                  class="iconly-sharp-bold-3"
+                  src="https://c.animaapp.com/ojfxqinY/img/iconly-sharp-bold-volume-up.svg"
+                  style="display: none;"
+                />
+                <div class="noise-container" style="display: none;">
+                  <div class="noise-label" id="noise-value">40 dB</div>
+                  <canvas id="noiseChart" width="220" height="100"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <div class="intensitas-cahya">
+              <div class="overlap-9">
+                <div class="rectangle-4"></div>
+                <div class="group-7">
+                  <div class="overlap-group-7">
+                    <div class="text-wrapper-14">Intensitas Cahaya</div>
+                    <div class="text-wrapper-15" id="light-status">Normal</div>
+                  </div>
+                </div>
+                <img class="iconly-sharp-bold-4" src="https://c.animaapp.com/ojfxqinY/img/iconly-sharp-bold-star.svg" />
+                <div class="light-chart-wrapper">
+                  <canvas id="lightChart" width="180" height="90"></canvas>
+                  <div class="text-wrapper-17" id="light-value">110 lux</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="rectangle-5"></div>
+            <div class="group-8"><div class="text-wrapper-14">Penggunaan Listrik</div></div>
+            <img class="i-lightning" src="https://c.animaapp.com/ojfxqinY/img/i-lightning.svg" />
+            <div class="tegangan">
+              <div class="overlap-10">
+                <div class="text-wrapper-18">Tegangan</div>
+                <div class="text-wrapper-19"><span id="volt-value">10 V</span></div>
+              </div>
+            </div>
+            <div class="arus">
+              <div class="overlap-10">
+                <div class="text-wrapper-18">Arus</div>
+                <div class="text-wrapper-19"><span id="curr-value">10 A</span></div>
+              </div>
+            </div>
+            <div class="daya">
+              <div class="overlap-10">
+                <div class="text-wrapper-20">Daya</div>
+                <div class="text-wrapper-21"><span id="power-value">100 W</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script>
+    // Initialize charts with default values
+    const tempChart = new Chart(document.getElementById("tempChart"), {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [25, 75],
+          backgroundColor: ['#9A5371', '#BF7896'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        rotation: -90,
+        circumference: 180,
+        cutout: '60%',
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    const humidChart = new Chart(document.getElementById("humidChart"), {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [50, 50],
+          backgroundColor: ['#9A5371', '#BF7896'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    const co2Chart = new Chart(document.getElementById("co2Chart"), {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: 10 }, (_, i) => i + 1),
+        datasets: [{
+          label: 'CO2',
+          data: Array(10).fill(30),
+          borderColor: '#9a5371',
+          fill: false,
+          tension: 0.4
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { display: false } }
+      }
+    });
+    
+    const noiseChart = new Chart(document.getElementById("noiseChart"), {
+      type: "bar",
+      data: {
+        labels: Array.from({ length: 10 }, () => ""),
+        datasets: [{
+          data: Array(10).fill(40),
+          backgroundColor: "#9a5371",
+          borderRadius: 4
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            display: false,
+            min: 0,
+            max: 100
+          },
+          y: {
+            display: false
+          }
+        }
+      }
+    });
+    
+    const lightChart = new Chart(document.getElementById("lightChart"), {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [300, 700],
+          backgroundColor: ['#9A5371', '#BF7896'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        rotation: -90,
+        circumference: 180,
+        cutout: '70%',
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    // Status determination function
+    function getStatus(value, type) {
+      switch(type) {
+        case 'temp':
+          if (value < 25) return 'Rendah';
+          if (value <= 35) return 'Normal';
+          return 'Tinggi';
+        case 'humid':
+          if (value < 50) return 'Rendah';
+          if (value <= 70) return 'Normal';
+          return 'Tinggi';
+        case 'co2':
+          if (value < 30) return 'Rendah';
+          if (value <= 70) return 'Normal';
+          return 'Tinggi';
+        case 'noise':
+          if (value < 30) return 'Rendah';
+          if (value <= 60) return 'Normal';
+          return 'Tinggi';
+        case 'light':
+          if (value < 300) return 'Rendah';
+          if (value <= 700) return 'Normal';
+          return 'Tinggi';
+        default:
+          return 'Normal';
+      }
+    }
+
+    // `previousComfort` will track the previous comfort state (True/False)
+    let previousComfort = null; // Initialize to null to avoid initial blink
+    const co2DataHistory = Array(10).fill(30);
+    const noiseDataHistory = Array(10).fill(40);
+    const blink = document.getElementById('blink');
+    const popup = document.getElementById('popup');
+    const header = document.getElementById('header');
+    const normal = document.getElementById('pink');
+
+    // Connect to WebSocket
+    const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    // Handle sensor data
+    socket.on('sensor_data', function(data) {
+      data.forEach(sensor => {
+        console.log("Sensor Data:", sensor);
+        
+        // Update charts with new data
+        const temp = parseFloat(sensor.temp); // Use parseFloat for numeric values
+        const humid = parseFloat(sensor.humidity);
+        const co2 = parseInt(sensor.co2);
+        const noise = parseFloat(sensor.noise);
+        const light = parseFloat(sensor.illuminance);
+        const volt = parseFloat(sensor.voltage);
+        const curr = parseFloat(sensor.current);
+        const power = volt * curr;
+        const leak = sensor.gas_detection; // This is already a boolean
+        const time = sensor.timestamp;
+
+        // Update temperature chart
+        tempChart.data.datasets[0].data = [temp, 100 - temp]; // Assuming temp is % of max, or adjust range
+        
+        // Update humidity chart
+        humidChart.data.datasets[0].data = [humid, 100 - humid]; // Assuming humid is % of max
+        
+        // Update CO2 line chart (shifting data)
+        co2DataHistory.shift();
+        co2DataHistory.push(co2);
+        co2Chart.data.datasets[0].data = [...co2DataHistory];
+        
+        // Update noise bar chart
+        noiseDataHistory.shift();
+        noiseDataHistory.push(noise);
+        noiseChart.data.datasets[0].data = [...noiseDataHistory];
+        
+        // Update light chart
+        lightChart.data.datasets[0].data = [light, 1000 - light]; // Assuming max light is 1000
+        
+        // Update all charts
+        tempChart.update();
+        humidChart.update();
+        co2Chart.update();
+        noiseChart.update();
+        lightChart.update();
+        
+        // Update numerical displays
+        document.getElementById("temp-value").innerText = temp.toFixed(1) + '°';
+        document.getElementById("humid-value").innerText = humid.toFixed(1) + '%';
+        document.getElementById("co2-value").innerText = co2 + 'ppm';
+        document.getElementById("noise-value").innerText = noise.toFixed(1) + ' dB';
+        document.getElementById("light-value").innerText = light.toFixed(1) + ' lux';
+        document.getElementById("volt-value").innerText = volt.toFixed(2) + ' V';
+        document.getElementById("curr-value").innerText = curr.toFixed(2) + ' A';
+        document.getElementById("power-value").innerText = power.toFixed(2) + ' W';
+        document.getElementById("timestamp").innerText = time;
+        
+        // Update status indicators
+        document.getElementById("temp-status").innerText = getStatus(temp, 'temp');
+        document.getElementById("humid-status").innerText = getStatus(humid, 'humid');
+        document.getElementById("co2-status").innerText = getStatus(co2, 'co2');
+        document.getElementById("noise-status").innerText = getStatus(noise, 'noise');
+        document.getElementById("light-status").innerText = getStatus(light, 'light');
+
+        // Update leak detection display
+        const leakText = document.querySelector(".tidak-ada-kebocoran");
+        leakText.innerHTML = leak ? "Ada<br/>Kebocoran" : "Tidak ada<br/>Kebocoran";
+        
+        // Update leak icon
+        const leakIcon = document.getElementById("leak-icon");
+        leakIcon.src = leak
+          ? "https://cdn-icons-png.flaticon.com/512/463/463612.png" // Leak icon
+          : "https://c.animaapp.com/ojfxqinY/img/iconly-sharp-bold-login.svg"; // No leak icon
+        leakIcon.classList.toggle("pulsing", leak);
+        
+        // Earthquake handling
+        blink.style.display = sensor.earthquake ? 'block' : 'none';
+        popup.style.display = sensor.earthquake ? 'block' : 'none';
+        header.style.display = sensor.earthquake ? 'none' : 'block';
+      });
+    });
+
+    // Handle comfort prediction data (formerly people count)
+    socket.on('people_count', function(data) {
+      data.forEach(countData => { // `countData.jumlah_orang` is now a boolean (True/False)
+        console.log("Comfort Data:", countData);
+        const isComfortable = countData.jumlah_orang; // This is the boolean value (True for nyaman, False for tidak nyaman)
+        const time = countData.timestamp;
+        
+        const comfortStatusText = document.getElementById("comfort-status-text");
+        const comfortIcon = document.getElementById("comfort-icon");
+
+        if (isComfortable) {
+          comfortStatusText.innerHTML = "Nyaman";
+          // comfortIcon.src = "https://cdn-icons-png.flaticon.com/512/2800/2800262.png"; // Example: Happy/comfortable icon
+          comfortStatusText.classList.remove("uncomfortable-text"); // Remove if previously uncomfortable
+          comfortIcon.classList.remove("uncomfortable-icon");
+        } else {
+          comfortStatusText.innerHTML = "Tidak Nyaman";
+          // comfortIcon.src = "https://cdn-icons-png.flaticon.com/512/612/612059.png"; // Example: Uncomfortable/sad icon
+          comfortStatusText.classList.add("uncomfortable-text"); // Add class for styling
+          comfortIcon.classList.add("uncomfortable-icon");
+        }
+        
+        // Blink animation if comfort status changed
+        // Check if previousComfort was initialized and if the status has changed
+        if (previousComfort !== null && isComfortable !== previousComfort) {
+          comfortIcon.classList.add("blinking");
+          setTimeout(() => {
+            comfortIcon.classList.remove("blinking");
+          }, 600);
+        }
+        
+        previousComfort = isComfortable; // Update the previous comfort state
+        document.getElementById("timestamp").innerText = time; // Update timestamp with latest data
+      });
+    });
+
+    // Fallback random data generator (in case WebSocket fails) - consider removing in production
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  </script>
+</body>
+</html>

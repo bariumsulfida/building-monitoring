@@ -1,0 +1,238 @@
+@import url("https://fonts.googleapis.com/css?family=Inter:400");
+
+@font-face {
+  font-family: "SF Pro Display-Bold";
+  src: url("https://anima-uploads.s3.amazonaws.com/projects/634e6b4b723b28ff69092d1b/fonts/fontsfree-net-sfprodisplay-bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "SF Pro Display-Regular";
+  src: url("https://anima-uploads.s3.amazonaws.com/projects/62e5bd2f729e81c0f2cb0ddb/fonts/sf-pro-display-regular.ttf") format("truetype");
+}
+
+/* Animasi berkedip */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Animasi getar */
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+/* Efek pulsa background */
+@keyframes pulse-bg {
+  0% { background-color: rgba(223, 184, 203, 1); }
+  50% { background-color: rgba(191, 80, 80, 1); }
+  100% { background-color: rgba(223, 184, 203, 1); }
+}
+
+/* Terapkan animasi */
+.pink-darurat {
+  animation: pulse-bg 2s infinite;
+}
+
+.text-wrapper-2 {
+  animation: blink 1s infinite;
+  color: #ff0000; /* merah mencolok */
+}
+
+.i-problem {
+  animation: shake 0.5s infinite;
+}
+
+.fullscreen-blink {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 0, 0, 0.5); /* Merah transparan */
+  z-index: 9999;
+  pointer-events: none; /* Agar tidak menghalangi klik */
+  animation: blink 1s infinite;
+}
+
+
+.pink-darurat {
+  width: 100%;
+  height: 100vh; /* Atau auto jika mau panjang sesuai isi */
+  margin: 0;
+  background-color: rgba(255, 255, 255, 1.0);
+  background: linear-gradient(
+    90deg,
+    rgba(223, 184, 203, 1) 0%,
+    rgba(191, 120, 150, 1) 65%,
+    rgba(154, 83, 113, 1) 100%
+  );
+}
+
+.pink-darurat .overlap {
+  width: 100%;
+  max-width: 1171px;
+  margin: 0 auto;
+  padding: 50px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.pink-darurat .white-background {
+  position: absolute;
+  width: 1171px;
+  height: 622px;
+  top: 15px;
+  left: 0;
+  background-color: #ffffff;
+  border-radius: 20px;
+}
+
+
+.pink-darurat .header {
+  position: absolute;
+  width: 1117px;
+  height: 43px;
+  top: 27px;
+  left: 20px;
+  background-color: transparent;
+}
+
+.pink-darurat .logo {
+  position: absolute;
+  width: 177px;
+  height: 43px;
+  top: 0;
+  left: 0;
+}
+
+.pink-darurat .overlap-group {
+  position: relative;
+  width: 175px;
+  height: 43px;
+  background-color: #dfb8cb;
+  border-radius: 20px;
+}
+
+.pink-darurat .text-wrapper {
+  position: absolute;
+  top: 10px;
+  left: 51px;
+  font-family: "SF Pro Display-Bold", Helvetica;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 20px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.pink-darurat .java {
+  position: absolute;
+  width: 31px;
+  height: 31px;
+  top: 6px;
+  left: 13px;
+}
+
+.pink-darurat .user {
+  position: absolute;
+  width: 278px;
+  height: 39px;
+  top: 4px;
+  left: 841px;
+}
+
+.pink-darurat .logo-alpha {
+  position: absolute;
+  width: 28px;
+  height: 39px;
+  top: 0;
+  left: 248px;
+}
+
+.pink-darurat .group {
+  position: absolute;
+  width: 26px;
+  height: 10px;
+  top: 29px;
+  left: 2px;
+}
+
+.pink-darurat .vector {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  top: 0;
+  left: 0;
+}
+
+.pink-darurat .div {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  font-family: "SF Pro Display-Bold", Helvetica;
+  font-weight: 700;
+  color: #9a5371;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.pink-darurat .darurat {
+  position: absolute;
+  width: 1094px;
+  height: 274px;
+  top: 206px;
+  left: 33px;
+}
+
+.pink-darurat .overlap-2 {
+  position: relative;
+  width: 1090px;
+  height: 274px;
+}
+
+.pink-darurat .text-wrapper-2 {
+  position: absolute;
+  top: 59px;
+  left: 254px;
+  font-family: "SF Pro Display-Bold", Helvetica;
+  font-weight: 700;
+  color: #9a5371;
+  font-size: 96px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.pink-darurat .text-wrapper-3 {
+  position: absolute;
+  top: 158px;
+  left: 386px;
+  font-family: "SF Pro Display-Bold", Helvetica;
+  font-weight: 700;
+  color: #9a5371;
+  font-size: 48px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.pink-darurat .i-problem {
+  position: absolute;
+  width: 274px;
+  height: 274px;
+  top: 0;
+  left: 0;
+}
